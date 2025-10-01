@@ -27,7 +27,7 @@ func (h *HTTPHandler) RegisterRoutes(r *gin.Engine) {
 func (h *HTTPHandler) ListRepositories(c *gin.Context) {
 	owner := c.Param("owner")
 
-	repos, err := h.service.ListRepositories(c.Request.Context(), owner)
+	repos, err := h.service.ListRepositories(c.Request.Context(), owner, "", "")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

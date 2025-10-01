@@ -11,6 +11,7 @@ type Repository struct {
 	URL         string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	PushedAt    time.Time
 }
 
 type CreateRepositoryInput struct {

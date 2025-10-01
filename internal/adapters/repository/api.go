@@ -18,9 +18,11 @@ func NewGithubRepository(client *github.Client) ports.RepositoryPort {
 	}
 }
 
-func (g *githubRepository) List(ctx context.Context, owner string) ([]*domain.Repository, error) {
+func (g *githubRepository) List(ctx context.Context, owner string, sort string, direction string) ([]*domain.Repository, error) {
 	repos, _, err := g.client.Repositories.List(ctx, owner, &github.RepositoryListOptions{
 		ListOptions: github.ListOptions{PerPage: 100},
+		Sort:        sort,
+		Direction:   direction,
 	})
 	if err != nil {
 		return nil, err
@@ -80,6 +82,16 @@ func (g *githubRepository) Get(ctx context.Context, owner, name string) (*domain
 	return g.toDomain(repo), nil
 }
 
+func (g *githubRepository) SetPrivate(ctx context.Context, owner, name string, private bool) (*domain.Repository, error) {
+	repo, _, err := g.client.Repositories.Edit(ctx, owner, name, &github.Repository{
+		Private: github.Ptr(private),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return g.toDomain(repo), nil
+}
+
 func (g *githubRepository) toDomain(r *github.Repository) *domain.Repository {
 	return &domain.Repository{
 		ID:          r.GetID(),
@@ -90,5 +102,6 @@ func (g *githubRepository) toDomain(r *github.Repository) *domain.Repository {
 		URL:         r.GetHTMLURL(),
 		CreatedAt:   r.GetCreatedAt().Time,
 		UpdatedAt:   r.GetUpdatedAt().Time,
+		PushedAt:    r.GetPushedAt().Time,
 	}
 }
